@@ -1,48 +1,31 @@
-/* ─────────────────────────────────────────────────────────────────────────────
-   attendee.css  —  styles scoped to the Attendee Phone page
-───────────────────────────────────────────────────────────────────────────── */
-
 @keyframes phIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Page shell / phone frame ──────────────────────────────────────────────── */
-.attendee-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100dvh;
-  background: var(--dark-bg);
-}
-
 .phone-frame {
-  width: 375px;
-  max-width: 100%;
-  height: 100dvh;
+  width: 100%;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--dark-phone);
-  position: relative;
-  overflow: hidden;
-  transition: background 0.3s, color 0.3s;
+  background: var(--cream);
+  color: var(--ink);
 }
 
-/* High-contrast override applied via JS */
 .phone-frame.high-contrast {
   background: #000;
   color: #ffff00;
 }
 
-/* ── Header ────────────────────────────────────────────────────────────────── */
+/* ── Header ── */
 .phone-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 1.1rem;
-  background: var(--dark-surface);
-  border-bottom: 1px solid var(--dark-border);
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
+  background: var(--cream);
 }
 
 .ph-status {
@@ -55,29 +38,27 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #555;
-  transition: background 0.4s, box-shadow 0.4s;
+  background: var(--ink-faint);
   flex-shrink: 0;
 }
 
 .ph-dot.live {
-  background: var(--live-green);
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
-  animation: pulseDotGreen 2s ease-in-out infinite;
+  background: var(--live);
+  animation: pulseDot 2s ease-in-out infinite;
 }
 
 .ph-status-text {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--ink-muted);
   letter-spacing: 0.08em;
   font-family: var(--ff-mono);
 }
 
-/* Language dropdown trigger */
+/* ── Language button ── */
 .ph-lang-btn {
-  background: var(--dark-surface2);
-  border: 1px solid var(--dark-border);
-  color: var(--dark-text);
+  background: var(--warm-white);
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
   border-radius: 7px;
   padding: 0.35rem 0.8rem;
   font-size: 0.85rem;
@@ -94,14 +75,14 @@
 .ph-lang-menu {
   position: absolute;
   right: 1.1rem;
-  top: 52px;
-  background: var(--dark-surface2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  top: 72px;
+  background: var(--cream);
+  border: 1px solid var(--border);
   border-radius: 9px;
   overflow: hidden;
   z-index: 99;
-  min-width: 170px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(28,26,22,0.12);
   display: none;
 }
 
@@ -113,35 +94,35 @@
   text-align: left;
   padding: 0.65rem 1rem;
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-muted);
   border: none;
   cursor: pointer;
   font-family: var(--ff-serif);
   font-size: 0.9rem;
-  border-bottom: 1px solid var(--dark-border);
+  border-bottom: 1px solid var(--border-soft);
   transition: background 0.15s, color 0.15s;
 }
 
 .ph-lang-menu button:last-child { border-bottom: none; }
-.ph-lang-menu button:hover      { background: rgba(196, 163, 90, 0.12); color: var(--dark-text); }
-.ph-lang-menu button.active     { color: var(--gold-light); font-weight: 600; }
+.ph-lang-menu button:hover { background: var(--gold-faint); color: var(--ink); }
+.ph-lang-menu button.active { color: var(--gold); font-weight: 600; }
 
-/* ── Accessibility bar ─────────────────────────────────────────────────────── */
+/* ── Accessibility bar ── */
 .ph-a11y {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
   padding: 0.5rem 1rem;
-  background: var(--dark-surface);
-  border-bottom: 1px solid var(--dark-border);
+  background: var(--warm-white);
+  border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
   flex-wrap: wrap;
 }
 
 .ph-a11y-label {
   font-size: 0.66rem;
-  color: rgba(255, 255, 255, 0.22);
+  color: var(--ink-faint);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -149,80 +130,71 @@
 .ph-a11y-sep {
   width: 1px;
   height: 18px;
-  background: var(--dark-border);
+  background: var(--border-soft);
 }
 
 .ph-a11y button {
-  background: var(--dark-surface2);
-  color: rgba(255, 255, 255, 0.4);
-  border: 1px solid var(--dark-border);
+  background: var(--cream);
+  color: var(--ink-muted);
+  border: 1px solid var(--border-soft);
   border-radius: 6px;
   padding: 0.28rem 0.65rem;
   font-size: 0.78rem;
   cursor: pointer;
   font-family: var(--ff-sans);
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
-.ph-a11y button:disabled              { opacity: 0.3; cursor: not-allowed; }
-.ph-a11y button.on                    { background: rgba(196, 163, 90, 0.15); color: var(--gold-light); border-color: rgba(196, 163, 90, 0.4); }
-.ph-a11y button:not(:disabled):hover  { color: var(--dark-text); }
+.ph-a11y button:disabled { opacity: 0.3; cursor: not-allowed; }
+.ph-a11y button.on { background: var(--gold-faint); color: var(--gold); border-color: var(--border); }
+.ph-a11y button:not(:disabled):hover { color: var(--ink); background: var(--parchment); }
 
-/* ── Caption area ──────────────────────────────────────────────────────────── */
+/* ── Caption area ── */
 .ph-caption-area {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  padding: 0 2rem;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-/* Fade gradient at top so history blends out softly */
-.ph-caption-area::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 70px;
-  background: linear-gradient(to bottom, var(--dark-phone), transparent);
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* ── Caption history ───────────────────────────────────────────────────────── */
+/* ── Caption history ── */
 .ph-history {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  padding: 1.5rem 1.25rem 0.75rem;
+  padding: 2rem 0 1rem;
   gap: 0.65rem;
-  z-index: 1;
 }
 
 .ph-history p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--ink-faint);
   font-family: var(--ff-serif);
   line-height: 1.45;
 }
 
-/* ── Live caption ──────────────────────────────────────────────────────────── */
+/* ── Live caption ── */
 .ph-live-wrap {
-  padding: 1.25rem 1.25rem 1rem;
-  border-top: 1px solid var(--dark-border);
+  padding: 1.25rem 0 1.5rem;
+  border-top: 1px solid var(--border-soft);
   position: relative;
   flex-shrink: 0;
 }
 
-/* Gold accent bar on left edge */
 .ph-live-wrap::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -2rem;
   top: 1.25rem;
-  bottom: 1rem;
+  bottom: 1.5rem;
   width: 3px;
   background: var(--gold-light);
   border-radius: 0 3px 3px 0;
@@ -232,7 +204,7 @@
   font-family: var(--ff-serif);
   font-size: 2rem;
   line-height: 1.4;
-  color: var(--dark-text);
+  color: var(--ink);
   word-break: break-word;
   transition: font-size 0.3s, color 0.3s, font-family 0.2s;
 }
@@ -241,20 +213,20 @@
   animation: phIn 0.3s ease;
 }
 
-/* ── Footer ────────────────────────────────────────────────────────────────── */
+/* ── Footer ── */
 .ph-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.45rem 1.1rem;
-  background: var(--dark-surface);
-  border-top: 1px solid var(--dark-border);
+  padding: 0.6rem 2rem;
+  background: var(--warm-white);
+  border-top: 1px solid var(--border-soft);
   flex-shrink: 0;
 }
 
 .ph-footer-txt {
   font-size: 0.66rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--ink-faint);
   letter-spacing: 0.1em;
   font-family: var(--ff-mono);
 }
