@@ -64,7 +64,7 @@ export default function HostPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/sessions", { method: "POST" });
+      const res = await fetch("https://https://kakalika-hunters.onrender.com//api/sessions", { method: "POST" });
       const { sessionId: id } = await res.json();
       setSessionId(id);
       sessionIdRef.current = id;
@@ -120,7 +120,7 @@ export default function HostPage() {
       recognitionRef.current = null;
     }
     if (sessionIdRef.current) {
-      await fetch(`http://localhost:4000/api/sessions/${sessionIdRef.current}`, { method: "DELETE" });
+      await fetch(`https://https://kakalika-hunters.onrender.com//api/sessions/${sessionIdRef.current}`, { method: "DELETE" });
     }
     resetSession();
   }
