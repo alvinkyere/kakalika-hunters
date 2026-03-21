@@ -1,4 +1,6 @@
-require("dotenv").config();
+
+require("dotenv").config({ path: __dirname + "/.env" });
+
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -10,11 +12,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
-
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 
 // ── Health check ──────────────────────────────────────────────────────────────
@@ -40,6 +43,8 @@ app.delete("/api/sessions/:sessionId", (req, res) => {
 
   res.json({ ok: true });
 });
+
+
 
 // ── Socket.io ─────────────────────────────────────────────────────────────────
 io.on("connection", (socket) => {

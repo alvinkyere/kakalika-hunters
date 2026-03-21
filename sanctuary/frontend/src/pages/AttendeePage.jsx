@@ -1,59 +1,31 @@
-// pages/AttendeePage.jsx
-// The mobile web page that loads after an attendee scans the QR code.
-// Reads ?session= from the URL, joins the room, and displays live captions.
-//
-// Socket events wired here:
-//   emit → attendee:join, attendee:set-language
-//   on   → caption:update, session:ended
-
 import { useState, useEffect } from "react";
 import LanguageSelector, { LANGUAGES } from "../components/LanguageSelector";
 import AccessibilityBar, { FONT_SIZES } from "../components/AccessibilityBar";
 import CaptionDisplay from "../components/CaptionDisplay";
-import { registerAttendeeEvents, emitJoinSession } from "../socketEvents";
+import { registerAttendeeEvents, emitJoinSession, emitSetLanguage } from "../socketEvents";
 import "../styles/attendee.css";
 
-// ── Demo stream (remove once backend is wired) ─────────────────────────────────
-const DEMO_CAPTIONS = [
-  "Good morning. Welcome, all of you.",
-  "We are so glad you chose to be here today.",
-  "Whether this is your first time with us, or you've been coming for thirty years —",
-  "you belong here.",
-  "This morning, I want to talk about something that doesn't get said enough.",
-  "About the people who sit quietly at the back.",
-  "Every community has them. Every congregation has them.",
-  "And today, we're going to talk about what it means to truly include them.",
-  "Not as a program. Not as an initiative. But as a practice of love.",
-];
-
 export default function AttendeePage() {
-  // Session
   const sessionCode = new URLSearchParams(window.location.search).get("session") ?? "DEMO";
 
-  // Caption state
-  const [history,  setHistory]  = useState([]);
-  const [current,  setCurrent]  = useState("Joining session…");
-  const [isLive,   setIsLive]   = useState(false);
+  const [history,     setHistory]     = useState([]);
+  const [current,     setCurrent]     = useState("Joining session…");
+  const [isLive,      setIsLive]      = useState(false);
+  const [language,    setLanguage]    = useState("en");
+  const [fontSizeIdx, setFontSizeIdx] = useState(2);
+  const [highContrast,setHighContrast]= useState(false);
+  const [dyslexic,    setDyslexic]    = useState(false);
 
-  // Accessibility state
-  const [language,      setLanguage]      = useState("en");
-  const [fontSizeIdx,   setFontSizeIdx]   = useState(2);   // default: 2rem
-  const [highContrast,  setHighContrast]  = useState(false);
-  const [dyslexic,      setDyslexic]      = useState(false);
-
-  // ── Join on mount ──────────────────────────────────────────────────────────
   useEffect(() => {
-    // In real app: emitJoinSession(sessionCode);
-    // Demo: pretend we connected after a short delay
-    const t = setTimeout(() => setIsLive(true), 1200);
-    return () => clearTimeout(t);
+    if (!sessionCode || sessionCode === "DEMO") return;
+    emitJoinSession(sessionCode, "EN");
+    setIsLive(true);
   }, [sessionCode]);
 
-  // ── Socket listeners ───────────────────────────────────────────────────────
   useEffect(() => {
     const cleanup = registerAttendeeEvents({
       onCaptionUpdate: ({ text }) => receiveCaption(text),
-      onSessionEnded:  ()         => {
+      onSessionEnded:  () => {
         setCurrent("This session has ended. Thank you for joining.");
         setIsLive(false);
       },
@@ -63,30 +35,18 @@ export default function AttendeePage() {
     return cleanup;
   }, []);
 
-  // ── Demo mode ──────────────────────────────────────────────────────────────
-  // DELETE once backend is wired.
-  useEffect(() => {
-    if (!isLive) return;
-    let idx = 0;
-    receiveCaption(DEMO_CAPTIONS[0]);
-    idx++;
-    const interval = setInterval(() => {
-      receiveCaption(DEMO_CAPTIONS[idx % DEMO_CAPTIONS.length]);
-      idx++;
-    }, 3800);
-    return () => clearInterval(interval);
-  }, [isLive]);
-
   function receiveCaption(text) {
     setCurrent(text);
     setHistory((prev) => [...prev.slice(-5), text]);
   }
 
-  // ── Accessibility helpers ──────────────────────────────────────────────────
+  function handleLanguageChange(code) {
+    setLanguage(code);
+    emitSetLanguage(sessionCode, code.toUpperCase());
+  }
+
   const fontSize   = FONT_SIZES[fontSizeIdx];
-  const fontFamily = dyslexic
-    ? "'OpenDyslexic', 'Comic Sans MS', cursive"
-    : "var(--ff-serif)";
+  const fontFamily = dyslexic ? "'OpenDyslexic', 'Comic Sans MS', cursive" : "var(--ff-serif)";
   const textColor  = highContrast ? "#FFFF00" : undefined;
 
   return (
@@ -94,21 +54,19 @@ export default function AttendeePage() {
       className={`phone-frame${highContrast ? " high-contrast" : ""}`}
       style={highContrast ? { background: "#000", color: "#FFFF00" } : {}}
     >
-      {/* ── Header ── */}
       <header className="phone-header">
         <div className="ph-status">
           <span className={`ph-dot${isLive ? " live" : ""}`} />
           <span className="ph-status-text">
-            {isLive ? `LIVE · ${sessionCode.toUpperCase()}` : "CONNECTING…"}
+            {isLive ? `LIVE · ${sessionCode.toUpperCase().slice(0, 8)}` : "CONNECTING…"}
           </span>
         </div>
         <LanguageSelector
           value={language}
-          onChange={(code) => setLanguage(code)}
+          onChange={handleLanguageChange}
         />
       </header>
 
-      {/* ── Accessibility bar ── */}
       <AccessibilityBar
         fontSizeIdx={fontSizeIdx}
         highContrast={highContrast}
@@ -119,7 +77,6 @@ export default function AttendeePage() {
         onToggleDy={() => setDyslexic((v) => !v)}
       />
 
-      {/* ── Captions ── */}
       <CaptionDisplay
         variant="attendee"
         history={history}
@@ -129,9 +86,8 @@ export default function AttendeePage() {
         color={textColor}
       />
 
-      {/* ── Footer ── */}
       <footer className="ph-footer">
-        <span className="ph-footer-txt">SESSION · {sessionCode.toUpperCase()}</span>
+        <span className="ph-footer-txt">SESSION · {sessionCode.toUpperCase().slice(0, 8)}</span>
         <span className="ph-footer-txt">
           {LANGUAGES.find((l) => l.code === language)?.label ?? "English"}
         </span>

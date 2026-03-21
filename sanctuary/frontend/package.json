@@ -4,16 +4,17 @@
   "private": true,
   "description": "Live caption frontend for Sanctuary — real-time accessibility for religious services",
   "scripts": {
-    "dev":   "vite",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react":        "^18.2.0",
-    "react-dom":    "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.2.0",
     "@vitejs/plugin-react": "^4.2.0",
     "vite": "^5.0.0"
   }

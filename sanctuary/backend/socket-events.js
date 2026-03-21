@@ -63,6 +63,13 @@ function registerSocketEvents(io, socket) {
     socket.data.sessionId = sessionId;
     socket.data.role = "host";
     console.log(`[Socket] Host ${socket.id} claimed session ${sessionId}`);
+
+  socket.on("audio-chunk", async (buffer) => {
+  const { sendAudioChunk } = require("./transcribe");
+  sendAudioChunk(buffer);
+});
+
+
   });
 
   // ── Attendee joins a session room ───────────────────────────────────────────
@@ -84,17 +91,19 @@ function registerSocketEvents(io, socket) {
   });
 
   // ── Attendee changes their display language ─────────────────────────────────
-  socket.on(EVENT_NAMES.CHANGE_LANGUAGE, ({ sessionId, newLanguage }) => {
-    const oldLanguage = socket.data.language ?? "EN";
-    const lang = newLanguage.toUpperCase();
+  socket.on(EVENT_NAMES.CHANGE_LANGUAGE, (payload) => {
+  const sessionId   = payload?.sessionId;
+  const newLanguage = payload?.newLanguage ?? payload?.language ?? "EN";
+  const oldLanguage = socket.data.language ?? "EN";
+  const lang        = newLanguage.toUpperCase();
 
-    removeAttendee(sessionId, oldLanguage);
-    socket.data.language = lang;
-    addAttendee(sessionId, lang);
+  removeAttendee(sessionId, oldLanguage);
+  socket.data.language = lang;
+  addAttendee(sessionId, lang);
 
-    broadcastStats(io, sessionId);
-    console.log(`[Socket] ${socket.id} changed language ${oldLanguage} → ${lang}`);
-  });
+  broadcastStats(io, sessionId);
+  console.log(`[Socket] ${socket.id} changed language ${oldLanguage} → ${lang}`);
+});
 
   // ── Person 3 pushes a transcript chunk ─────────────────────────────────────
   //
@@ -107,6 +116,8 @@ function registerSocketEvents(io, socket) {
   //   - Emit the right text to each socket individually.
   //
   socket.on(EVENT_NAMES.NEW_TRANSCRIPT, async ({ sessionId, text, isFinal }) => {
+    console.log("[Transcript] received:", text, "for session:", sessionId);
+
     if (!text) return;
 
     const session = getSession(sessionId);
@@ -122,6 +133,7 @@ function registerSocketEvents(io, socket) {
       if (!langGroups.has(lang)) langGroups.set(lang, []);
       langGroups.get(lang).push(s);
     }
+    socket.emit(EVENT_NAMES.CAPTION_UPDATE, { text, isFinal, lang: "EN" });
 
     // Translate once per language, then fan out
     const translationJobs = Array.from(langGroups.entries()).map(async ([lang, sockets]) => {
