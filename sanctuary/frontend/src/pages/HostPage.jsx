@@ -239,7 +239,7 @@ export default function HostPage() {
           <div>
             <div className="section-label">Attendee QR code</div>
             <div className="qr-card">
-              <div className="qr-frame"><QRCode size={140} faded={!sessionActive} /></div>
+              <div className="qr-frame"><QRCode size={140} faded={!sessionActive} url={joinUrl} /></div>
               <p className="qr-caption">Attendees scan this to follow along on their phone</p>
               <span className="qr-url" style={{ wordBreak:"break-all", textAlign:"center", fontSize:"0.65rem" }}>{joinUrl}</span>
             </div>
