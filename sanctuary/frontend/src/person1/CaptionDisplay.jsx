@@ -22,7 +22,7 @@ export default function CaptionDisplay({ captions }) {
       {captions.map((c, i) => (
         <span
           key={i}
-          {/* caption-final = white, caption-partial = gray */}
+          /* caption-final = white, caption-partial = gray */
           className={c.isFinal ? 'caption-final' : 'caption-partial'}
         >
           {c.text}{' '}  {/* space between sentences */}
